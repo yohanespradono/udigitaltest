@@ -1,0 +1,22 @@
+{
+    "name": "udigital/module-custommodule",
+    "description": "Custom magento module for interview test",
+    "type": "magento2-module",
+    "license": "GPL-3.0",
+    "authors": [
+        {
+            "name": "Yohanes Pradono",
+            "email": "email@domain.com"
+        }
+    ],
+    "minimum-stability": "dev",
+    "require": {},
+    "autoload": {
+        "files": [
+            "registration.php"
+        ],
+        "psr-4": {
+            "Udigital\\CustomModule\\": ""
+        }
+    }
+}

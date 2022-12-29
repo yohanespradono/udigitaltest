@@ -1,0 +1,22 @@
+<?php
+/** @var $block \Magento\Framework\View\Element\Template */
+/** @var $configProvider \Udigital\CustomModule\ViewModel\ConfigProvider */
+$configProvider = $block->getData('configProvider');
+$helper = $configProvider->getSearchHelperData();
+/** @var $escaper \Magento\Framework\Escaper */
+?>
+<form id="omega-search-form" action="#" method="get" class="omega">
+    <input type="hidden" name="form_key" value="<?= $escaper->escapeUrl($helper->getFormKey()) ?>" />
+    <div>
+        <input
+            data-mage-init='{"omegaSearch":{
+                                    "formSelector":"#omega-search-form",
+                                    "url":"<?= $escaper->escapeUrl($helper->getAjaxSearchUrl()) ?>",
+                                    "destinationSelector":"#autocomplete"}
+                               }'
+            type="text" name="omega_search" id="omega-search" value="" />
+        <button type="submit" class="action primary tocart">Add To Cart</button>
+    </div>
+
+    <div id="autocomplete"></div>
+</form>

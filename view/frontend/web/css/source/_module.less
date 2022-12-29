@@ -1,0 +1,75 @@
+.omega {
+    width: 500px;
+    margin: auto;
+    div {
+        display: flex;
+        button {
+            margin-left: 10px;
+            width: 39%;
+        }
+        label, input, button {
+            font-size: inherit;
+            height: auto;
+            padding: 0.2em;
+            margin: 0.1em 0.1em;
+            -moz-box-sizing: content-box;
+            -webkit-box-sizing: content-box;
+            box-sizing: content-box;
+        }
+    }
+    #autocomplete {
+        position: absolute;
+        width: 395px;
+        display: block;
+        z-index: 999;
+        background-color: white;
+        ul {
+            padding: 0;
+            border: 1px solid #c2c2c2;
+            li.selected {
+                background-color: antiquewhite !important;
+            }
+            li:hover {
+                background-color: lightgrey;
+            }
+            li {
+                list-style: none;
+                border-bottom: 1px solid grey;
+                cursor: pointer;
+                margin: 0;
+                a:hover {
+                    text-decoration: none;
+                }
+                .wrapper {
+                    display: flex;
+                    margin-right: 4px;
+                    .image {
+                        width: 100px;
+                        img {
+                            width: 48px;
+                            object-fit: contain;
+                        }
+                    }
+                    .info {
+                        display: flex;
+                        flex-direction: column;
+                        flex-grow: 1;
+                        .title {
+                            margin: 0;
+                        }
+                        .description {
+                            flex-grow: 1;
+                        }
+                        .rating-price {
+                            display: flex;
+                            flex-direction: row;
+                            .rating-summary {
+                                flex-grow: 1;
+                            }
+                        }
+                    }
+                }
+            }
+        }
+    }
+}
