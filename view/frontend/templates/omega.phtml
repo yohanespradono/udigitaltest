@@ -7,7 +7,7 @@ $helper = $configProvider->getSearchHelperData();
 ?>
 <form id="omega-search-form" action="#" method="get" class="omega">
     <input type="hidden" name="form_key" value="<?= $escaper->escapeUrl($helper->getFormKey()) ?>" />
-    <div>
+    <div class="form-controls">
         <input
             data-mage-init='{"omegaSearch":{
                                     "formSelector":"#omega-search-form",

@@ -19,8 +19,8 @@ define([
             minicartSelector: '[data-block="minicart"]',
             typingTimer: null,
             doneTypingInterval: 500,
-            template: '<li class="item" data-add-url="<%- data.add_url %>" data-sku="<%- data.sku %>" data-entity-id="<%- data.entity_id %>" data-qty=1>' +
-                    '<div class="wrapper" href="#">' +
+            template: '<li class="product item" data-add-url="<%- data.add_url %>" data-sku="<%- data.sku %>" data-entity-id="<%- data.entity_id %>" data-qty=1>' +
+                    '<div class="wrapper">' +
                         '<div class="image"><img src="<%- data.image %>"></div>' +
                         '<div class="info">' +
                             '<h3 class="title"><%- data.title %></h3>' +
@@ -51,7 +51,7 @@ define([
             // bind keypress
             this.element.on('keydown', this._onKeyDown);
             this.element.on('input propertychange', this._onPropertyChange);
-            this.autoComplete.on('click', '.item' , function(){
+            this.autoComplete.on('click', '.item.product' , function(){
                 var addUrl = $(this).data('add-url');
                 $('#omega-search-form').attr('action', addUrl);
                 $('#autocomplete .item').removeClass('selected');
@@ -61,6 +61,11 @@ define([
                 } else {
                     $('#omega-search-form button[type=submit]').prop('disabled', true);
                 }
+            });
+            this.autoComplete.on('click', '.item.word a' , function(e){
+                e.preventDefault();
+                var word = $(this).html();
+                $('#omega-search').val(word).trigger('input');
             });
 
             //bind submit as add to cart
@@ -86,10 +91,21 @@ define([
 
             if (value.length >= parseInt(this.options.minSearchLength, 10)) {
                 this.request = $.get(this.options.url, {q: value}, $.proxy(function (data) {
-                    if( ! data.length)
-                        dropdown.find('something');
+                    if( ! data.items.length) {
+                        let suggestions = '<dl class="block">';
+                        if(data.suggestions.length) {
+                            suggestions += '<dt class="title">Did you mean</dt>';
+                            $.each(data.suggestions, function(index, word){
+                                suggestions += '<dd class="item word"><a href="#">'+word+'</a></dd>';
+                            });
+                        }
+                        suggestions += '</dl>';
+                        this.autoComplete.html('<div class="message notice"></div>');
+                        this.autoComplete.find('.message').append('<div>'+$.mage.__('Your search returned no results.') + suggestions + '</div>');
+                        return;
+                    }
 
-                    $.each(data, function (index, element) {
+                    $.each(data.items, function (index, element) {
                         element.description = element.description.substring(0, 100);
                         element.index = index;
                         var html = template({

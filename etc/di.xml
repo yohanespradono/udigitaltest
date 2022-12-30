@@ -1,0 +1,11 @@
+<?xml version="1.0"?>
+
+<config xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+        xsi:noNamespaceSchemaLocation="urn:magento:framework:ObjectManager/etc/config.xsd">
+    <type name="Udigital\CustomModule\Controller\Ajax\Search">
+        <arguments>
+            <argument name="searchDataProvider" xsi:type="object">Magento\AdvancedSearch\Model\SuggestedQueries</argument>
+            <argument name="title" xsi:type="string" translatable="true">Did you mean</argument>
+        </arguments>
+    </type>
+</config>

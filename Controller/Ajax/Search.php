@@ -2,6 +2,7 @@
 
 namespace Udigital\CustomModule\Controller\Ajax;
 
+use Magento\AdvancedSearch\Model\SuggestedQueriesInterface;
 use Magento\Catalog\Block\Product\ListProduct;
 use Magento\Catalog\Helper\Image;
 use Magento\Catalog\Model\Layer\Resolver;
@@ -70,6 +71,11 @@ class Search extends \Magento\Framework\App\Action\Action implements HttpGetActi
     private $cartHelper;
 
     /**
+     * @var SuggestedQueriesInterface
+     */
+    private $searchDataProvider;
+
+    /**
      * @param Context $context
      * @param QueryFactory $queryFactory
      * @param Resolver $layerResolver
@@ -91,7 +97,8 @@ class Search extends \Magento\Framework\App\Action\Action implements HttpGetActi
         StoreManagerInterface $_storeManager,
         AppendSummaryDataFactory $appendSummaryDataFactory,
         ProductRepositoryInterface $productRepository,
-        Cart $cartHelper
+        Cart $cartHelper,
+        SuggestedQueriesInterface $searchDataProvider
     ) {
         parent::__construct($context);
         $this->_queryFactory = $queryFactory;
@@ -103,6 +110,7 @@ class Search extends \Magento\Framework\App\Action\Action implements HttpGetActi
         $this->appendSummaryDataFactory = $appendSummaryDataFactory;
         $this->productRepository = $productRepository;
         $this->cartHelper = $cartHelper;
+        $this->searchDataProvider = $searchDataProvider;
     }
 
     /**
@@ -117,26 +125,37 @@ class Search extends \Magento\Framework\App\Action\Action implements HttpGetActi
             ->addAttributeToSelect('description')
             ->setPageSize(10)
             ->addSearchFilter($query);
-        $responseData = [];
+        $items = [];
 
         foreach ($productCollection as $product) {
             if ($product->getTypeId() == \Magento\ConfigurableProduct\Model\Product\Type\Configurable::TYPE_CODE) {
                 $children = $product->getTypeInstance()->getUsedProducts($product);
                 foreach ($children as $childrenProduct) {
-                    $responseData[] = $this->createResponseItem($childrenProduct);
-                    if (count($responseData) >= self::RESULT_MAX_SIE) {
+                    $items[] = $this->createResponseItem($childrenProduct);
+                    if (count($items) >= self::RESULT_MAX_SIE) {
                         break 1;
                     }
                 }
             } else {
-                $responseData[] = $this->createResponseItem($product);
+                $items[] = $this->createResponseItem($product);
             }
-            if (count($responseData) >= self::RESULT_MAX_SIE) {
+            if (count($items) >= self::RESULT_MAX_SIE) {
                 break;
             }
         }
         /** @var \Magento\Framework\Controller\Result\Json $resultJson */
         $resultJson = $this->resultFactory->create(ResultFactory::TYPE_JSON);
+        $responseData['items']  = $items;
+
+        $suggestions = [];
+        $items = $this->searchDataProvider->getItems($this->_queryFactory->get());
+        if(!empty($items)) {
+            foreach($items as $item) {
+                $suggestions[] = $item->getQueryText();
+            }
+        }
+        $responseData['suggestions'] = $suggestions;
+
         $resultJson->setData($responseData);
         return $resultJson;
     }
